@@ -47,7 +47,7 @@ namespace PiSubmarine::SPI::Linux
         tr.tx_buf = reinterpret_cast<unsigned long>(txData);
         tr.rx_buf = reinterpret_cast<unsigned long>(rxData);
         tr.len = static_cast<uint32_t>(len);
-        tr.cs_change = 1;
+        // tr.cs_change = 1;
         tr.delay_usecs = 1;
 
         const int ret = ioctl(m_Fd, SPI_IOC_MESSAGE(1), &tr);
