@@ -10,8 +10,10 @@
 
 namespace PiSubmarine::SPI::Linux
 {
-    Driver::Driver(std::string_view devicePath, uint32_t speed, uint8_t bitsPerWord, uint8_t rdMode, uint8_t wrMode):
-        m_DevicePath(devicePath)
+    Driver::Driver(std::string_view devicePath, uint32_t speed, uint8_t bitsPerWord, uint8_t rdMode, uint8_t wrMode,
+                   size_t delay) :
+        m_DevicePath(devicePath),
+        m_Delay(delay)
     {
         m_Fd = open(m_DevicePath.c_str(), O_RDWR);
         if (m_Fd < 0)
@@ -48,7 +50,7 @@ namespace PiSubmarine::SPI::Linux
         tr.rx_buf = reinterpret_cast<unsigned long>(rxData);
         tr.len = static_cast<uint32_t>(len);
         // tr.cs_change = 1;
-        tr.delay_usecs = 1;
+        tr.delay_usecs = m_Delay;
 
         const int ret = ioctl(m_Fd, SPI_IOC_MESSAGE(1), &tr);
         return ret == len;
