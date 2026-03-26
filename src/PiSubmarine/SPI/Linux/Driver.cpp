@@ -10,7 +10,7 @@
 
 namespace PiSubmarine::SPI::Linux
 {
-    Driver::Driver(std::string_view devicePath, uint32_t speed, uint8_t bitsPerWord, uint8_t mode):
+    Driver::Driver(std::string_view devicePath, uint32_t speed, uint8_t bitsPerWord, uint8_t rdMode, uint8_t wrMode):
         m_DevicePath(devicePath)
     {
         m_Fd = open(m_DevicePath.c_str(), O_RDWR);
@@ -19,7 +19,8 @@ namespace PiSubmarine::SPI::Linux
             throw std::runtime_error("Failed to open " + m_DevicePath);
         }
 
-        ioctl(m_Fd, SPI_IOC_WR_MODE, &mode);
+        ioctl(m_Fd, SPI_IOC_RD_MODE, &rdMode);
+        ioctl(m_Fd, SPI_IOC_WR_MODE, &wrMode);
         ioctl(m_Fd, SPI_IOC_WR_BITS_PER_WORD, &bitsPerWord);
         ioctl(m_Fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
     }
