@@ -35,10 +35,10 @@ namespace PiSubmarine::SPI::Linux
         }
     }
 
-    bool Driver::WriteRead(uint8_t* txData, uint8_t* rxData, size_t len)
+    bool Driver::WriteRead(const std::span<const uint8_t> txData, const std::span<uint8_t> rxData)
     {
         assert(m_Fd > 0);
-        if (len == 0)
+        if (txData.empty() || txData.size() != rxData.size())
         {
             return false;
         }
@@ -46,13 +46,13 @@ namespace PiSubmarine::SPI::Linux
         spi_ioc_transfer tr{0};
         std::memset(&tr, 0, sizeof(tr));
 
-        tr.tx_buf = reinterpret_cast<unsigned long>(txData);
-        tr.rx_buf = reinterpret_cast<unsigned long>(rxData);
-        tr.len = static_cast<uint32_t>(len);
+        tr.tx_buf = reinterpret_cast<unsigned long>(txData.data());
+        tr.rx_buf = reinterpret_cast<unsigned long>(rxData.data());
+        tr.len = static_cast<uint32_t>(txData.size());
         // tr.cs_change = 1;
         tr.delay_usecs = m_Delay;
 
         const int ret = ioctl(m_Fd, SPI_IOC_MESSAGE(1), &tr);
-        return ret == len;
+        return ret == static_cast<int>(txData.size());
     }
 }

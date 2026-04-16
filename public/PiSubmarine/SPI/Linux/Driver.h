@@ -1,6 +1,8 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 #include <string>
 #include <string_view>
 #include <linux/spi/spidev.h>
@@ -15,7 +17,7 @@ namespace PiSubmarine::SPI::Linux
         explicit Driver(std::string_view devicePath, uint32_t speed, uint8_t bitsPerWord = 8, uint8_t rdMode = SPI_MODE_0, uint8_t wrMode = SPI_MODE_0, size_t delay = 1);
         ~Driver() override;
 
-        bool WriteRead(uint8_t* txData, uint8_t* rxData, std::size_t len) override;
+        bool WriteRead(std::span<const uint8_t> txData, std::span<uint8_t> rxData) override;
 
     private:
         std::string m_DevicePath;

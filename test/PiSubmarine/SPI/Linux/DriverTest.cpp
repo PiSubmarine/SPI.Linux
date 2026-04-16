@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cstring>
 #include <iomanip>
+#include <span>
 
 namespace PiSubmarine::SPI::Linux
 {
@@ -22,7 +23,9 @@ namespace PiSubmarine::SPI::Linux
         uint16_t dataOut = reg;
         // dataOut |= (1 << 14);
         uint16_t dataIn = 0;
-        bool ok = driver.WriteRead(reinterpret_cast<uint8_t*>(&dataOut), reinterpret_cast<uint8_t*>(&dataIn), 2);
+        bool ok = driver.WriteRead(
+            std::span<const uint8_t>(reinterpret_cast<const uint8_t*>(&dataOut), 2),
+            std::span<uint8_t>(reinterpret_cast<uint8_t*>(&dataIn), 2));
         if (!ok)
         {
             std::string err = std::strerror(errno);
